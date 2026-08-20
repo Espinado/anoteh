@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Contracts\TwilioMessageSender;
 use App\Models\Attachment;
 use App\Models\AuditLog;
 use App\Models\Defect;
@@ -28,11 +29,13 @@ use App\Policies\VehicleMaintenancePlanPolicy;
 use App\Policies\VehiclePolicy;
 use App\Services\Odometer\ManualOdometerProvider;
 use App\Services\Odometer\OdometerProviderInterface;
+use App\Services\TwilioRestMessageSender;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use Twilio\Rest\Client;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -42,6 +45,11 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(OdometerProviderInterface::class, ManualOdometerProvider::class);
+        $this->app->singleton(Client::class, fn () => new Client(
+            (string) config('services.twilio.sid'),
+            (string) config('services.twilio.token'),
+        ));
+        $this->app->bind(TwilioMessageSender::class, TwilioRestMessageSender::class);
     }
 
     /**

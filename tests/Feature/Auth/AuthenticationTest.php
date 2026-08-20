@@ -32,7 +32,7 @@ class AuthenticationTest extends TestCase
 
         $component
             ->assertHasNoErrors()
-            ->assertRedirect(route('dashboard', absolute: false));
+            ->assertRedirect(route('vehicles.index', absolute: false));
 
         $this->assertAuthenticated();
     }
@@ -60,7 +60,7 @@ class AuthenticationTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->get('/dashboard');
+        $response = $this->get('/vehicles');
 
         $response
             ->assertOk()
@@ -74,7 +74,7 @@ class AuthenticationTest extends TestCase
 
         $this->actingAs($user);
 
-        $this->post('/logout')->assertRedirect('/');
+        $this->post('/logout')->assertRedirect(route('vehicles.index'));
 
         $this->assertGuest();
     }

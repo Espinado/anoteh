@@ -33,6 +33,7 @@ class ProfileTest extends TestCase
         $component = Volt::test('profile.update-profile-information-form')
             ->set('name', 'Test User')
             ->set('email', 'test@example.com')
+            ->set('phone', '+37120000000')
             ->call('updateProfileInformation');
 
         $component
@@ -43,7 +44,21 @@ class ProfileTest extends TestCase
 
         $this->assertSame('Test User', $user->name);
         $this->assertSame('test@example.com', $user->email);
+        $this->assertSame('+37120000000', $user->phone);
         $this->assertNull($user->email_verified_at);
+    }
+
+    public function test_phone_must_use_e164_format(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Volt::test('profile.update-profile-information-form')
+            ->set('name', $user->name)
+            ->set('email', $user->email)
+            ->set('phone', '2000 0000')
+            ->call('updateProfileInformation')
+            ->assertHasErrors('phone');
     }
 
     public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
@@ -76,7 +91,7 @@ class ProfileTest extends TestCase
 
         $component
             ->assertHasNoErrors()
-            ->assertRedirect('/');
+            ->assertRedirect('/vehicles');
 
         $this->assertGuest();
         $this->assertSoftDeleted($user);

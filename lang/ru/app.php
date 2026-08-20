@@ -33,6 +33,16 @@ return [
     'odometer_saved' => 'Показание одометра сохранено.', 'service_completed' => 'Сервисная запись завершена.',
     'file_uploaded' => 'Файл загружен.', 'status_changed_from_ui' => 'Статус изменён в административном интерфейсе.', 'confirm_complete' => 'Завершить сервисную запись?',
     'complete' => 'Завершить', 'add' => 'Добавить', 'upload' => 'Загрузить',
+    'reminder_greeting' => 'Здравствуйте, :name!',
+    'reminder_review' => 'Пожалуйста, проверьте информацию в Anoteh.',
+    'expiry_reminder_title' => 'Напоминание: :type',
+    'expiry_reminder_message' => ':registration — :vehicle. :type до :date (:state).',
+    'reminder_remaining' => 'осталось дней: :days',
+    'reminder_overdue' => 'просрочено на :days дн.',
+    'expiry_types' => [
+        'inspection_until' => 'Техосмотр',
+        'octa_until' => 'OCTA',
+    ],
     'tabs' => [
         'overview' => 'Обзор', 'service' => 'Сервис', 'defects' => 'Дефекты',
         'expenses' => 'Расходы', 'odometer' => 'Одометр', 'documents' => 'Документы', 'files' => 'Файлы',
@@ -59,7 +69,8 @@ return [
         'service_record_id' => 'Сервисная запись', 'incurred_on' => 'Дата расхода',
         'net_amount' => 'Сумма без налога', 'vendor' => 'Поставщик',
         'type' => 'Тип', 'service_type' => 'Тип сервиса', 'unit' => 'Единица', 'tax_rate' => 'Ставка налога', 'number' => 'Номер', 'issued_on' => 'Выдан', 'expires_on' => 'Действует до', 'warning_days' => 'Предупредить за (дни)',
-        'email' => 'E-mail', 'role' => 'Роль', 'password' => 'Пароль',
+        'email' => 'E-mail', 'phone' => 'Телефон', 'role' => 'Роль', 'password' => 'Пароль',
+        'inspection_until' => 'Техосмотр до', 'octa_until' => 'OCTA до',
     ],
     'statuses' => [
         'active' => 'Активный', 'inactive' => 'Неактивный', 'draft' => 'Черновик',

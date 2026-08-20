@@ -19,7 +19,7 @@ new class extends Component
 
         tap(Auth::user(), $logout(...))->delete();
 
-        $this->redirect('/', navigate: true);
+        $this->redirectRoute('vehicles.index', navigate: true);
     }
 }; ?>
 

@@ -10,6 +10,6 @@ class LogoutAndRedirect
     {
         $logout();
 
-        return redirect('/');
+        return redirect()->route('vehicles.index');
     }
 }

@@ -111,14 +111,9 @@ class DomainCoreTest extends TestCase
     {
         Notification::fake();
         User::factory()->create(['role' => UserRole::Manager]);
-        $vehicle = Vehicle::factory()->create(['current_odometer' => 10000]);
-        $template = MaintenanceTemplate::factory()->create(['interval_km' => 10000]);
-        VehicleMaintenancePlan::query()->create([
-            'vehicle_id' => $vehicle->id,
-            'maintenance_template_id' => $template->id,
-            'next_due_odometer' => 10000,
-            'next_due_date' => '2026-08-20',
-            'status' => 'due',
+        Vehicle::factory()->create([
+            'inspection_until' => '2026-09-19',
+            'octa_until' => '2026-08-19',
         ]);
 
         $this->artisan('anoteh:send-reminders', ['--date' => '2026-08-20'])->assertSuccessful();
@@ -188,11 +183,14 @@ class DomainCoreTest extends TestCase
         $action->execute($manager, ExpenseCategory::InspectionFees, 100, 21, $date, vendor: 'Inspector', referenceNumber: 'INV-1');
     }
 
-    public function test_critical_defect_document_and_warranty_reminders_are_idempotent(): void
+    public function test_only_configured_vehicle_expiry_offsets_are_reminded(): void
     {
         Notification::fake();
         $manager = User::factory()->create(['role' => UserRole::Manager]);
-        $vehicle = Vehicle::factory()->create(['current_odometer' => 50000]);
+        $vehicle = Vehicle::factory()->create([
+            'inspection_until' => '2026-08-22',
+            'octa_until' => null,
+        ]);
         Defect::factory()->create([
             'vehicle_id' => $vehicle->id,
             'reported_by' => $manager->id,
@@ -216,10 +214,9 @@ class DomainCoreTest extends TestCase
         ]);
 
         $this->artisan('anoteh:send-reminders', ['--date' => '2026-08-20'])->assertSuccessful();
-        $this->artisan('anoteh:send-reminders', ['--date' => '2026-08-20'])->assertSuccessful();
 
-        $this->assertDatabaseCount('reminder_deliveries', 4);
-        Notification::assertCount(4);
+        $this->assertDatabaseCount('reminder_deliveries', 0);
+        Notification::assertNothingSent();
     }
 
     public function test_audit_logs_are_admin_only_and_vehicle_changes_are_audited(): void

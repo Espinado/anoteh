@@ -86,6 +86,16 @@ return [
     'complete' => 'Pabeigt',
     'add' => 'Pievienot',
     'upload' => 'Augšupielādēt',
+    'reminder_greeting' => 'Sveiki, :name!',
+    'reminder_review' => 'Lūdzu, pārbaudiet šo informāciju Anoteh sistēmā.',
+    'expiry_reminder_title' => ':type termiņa atgādinājums',
+    'expiry_reminder_message' => ':registration — :vehicle. :type termiņš: :date (:state).',
+    'reminder_remaining' => 'atlikušas :days dienas',
+    'reminder_overdue' => 'nokavēts par :days dienām',
+    'expiry_types' => [
+        'inspection_until' => 'Tehniskā apskate',
+        'octa_until' => 'OCTA',
+    ],
     'tabs' => [
         'overview' => 'Pārskats', 'service' => 'Serviss', 'defects' => 'Defekti',
         'expenses' => 'Izdevumi', 'odometer' => 'Odometrs',
@@ -114,7 +124,8 @@ return [
         'notes' => 'Piezīmes', 'service_record_id' => 'Servisa ieraksts', 'incurred_on' => 'Izdevumu datums',
         'net_amount' => 'Summa bez nodokļa', 'vendor' => 'Piegādātājs',
         'type' => 'Tips', 'service_type' => 'Servisa tips', 'unit' => 'Vienība', 'tax_rate' => 'Nodokļa likme', 'number' => 'Numurs', 'issued_on' => 'Izsniegts', 'expires_on' => 'Derīgs līdz', 'warning_days' => 'Brīdināt pirms (dienas)',
-        'email' => 'E-pasts', 'role' => 'Loma', 'password' => 'Parole',
+        'email' => 'E-pasts', 'phone' => 'Tālrunis', 'role' => 'Loma', 'password' => 'Parole',
+        'inspection_until' => 'Tehniskā apskate līdz', 'octa_until' => 'OCTA līdz',
     ],
     'statuses' => [
         'active' => 'Aktīvs', 'inactive' => 'Neaktīvs', 'draft' => 'Melnraksts',

@@ -19,7 +19,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[Fillable([
     'registration_number', 'vin', 'make', 'model', 'year', 'status',
     'category', 'body_type', 'fuel_type', 'commissioned_on',
-    'responsible_user_id', 'primary_attachment_id', 'current_odometer', 'notes',
+    'inspection_until', 'octa_until', 'responsible_user_id',
+    'primary_attachment_id', 'current_odometer', 'notes',
 ])]
 class Vehicle extends Model
 {
@@ -35,6 +36,8 @@ class Vehicle extends Model
             'category' => VehicleCategory::class,
             'fuel_type' => FuelType::class,
             'commissioned_on' => 'immutable_date',
+            'inspection_until' => 'immutable_date',
+            'octa_until' => 'immutable_date',
             'current_odometer' => 'decimal:1',
         ];
     }

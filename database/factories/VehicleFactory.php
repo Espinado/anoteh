@@ -23,6 +23,8 @@ class VehicleFactory extends Factory
             'category' => VehicleCategory::Truck,
             'body_type' => fake()->randomElement(['tractor', 'box', 'curtain_sider']),
             'fuel_type' => FuelType::Diesel,
+            'inspection_until' => fake()->optional()->dateTimeBetween('now', '+2 years'),
+            'octa_until' => fake()->optional()->dateTimeBetween('now', '+1 year'),
             'commissioned_on' => fake()->dateTimeBetween('-5 years', 'now'),
             'current_odometer' => fake()->randomFloat(1, 20000, 500000),
         ];

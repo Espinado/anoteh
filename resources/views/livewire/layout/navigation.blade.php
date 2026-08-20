@@ -12,7 +12,7 @@ new class extends Component
     {
         $logout();
 
-        $this->redirect('/', navigate: true);
+        $this->redirectRoute('vehicles.index', navigate: true);
     }
 }; ?>
 
