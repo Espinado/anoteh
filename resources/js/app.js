@@ -1,3 +1,5 @@
+import './pwa-install';
+
 const loading = () => document.getElementById('global-loading');
 const showLoading = () => loading()?.classList.replace('hidden', 'grid');
 const hideLoading = () => loading()?.classList.replace('grid', 'hidden');

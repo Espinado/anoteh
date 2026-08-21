@@ -111,4 +111,62 @@ class AdminUiIntegrationTest extends TestCase
                 'form.fuel_type',
             ]);
     }
+
+    public function test_vehicle_list_supports_safe_sorting_pagination_and_mobile_cards(): void
+    {
+        $manager = User::factory()->create(['role' => UserRole::Manager]);
+        Vehicle::factory()->create(['registration_number' => 'AA-0001', 'make' => 'Audi']);
+        Vehicle::factory()->create(['registration_number' => 'ZZ-9999', 'make' => 'Volvo']);
+        Vehicle::factory()->count(14)->create();
+
+        Livewire::actingAs($manager)
+            ->test(AdminUi::class, ['section' => 'vehicles', 'mode' => 'index'])
+            ->set('perPage', 25)
+            ->assertViewHas('records', fn ($records) => $records->perPage() === 25 && $records->total() === 16)
+            ->assertSee('vehicle-card-')
+            ->call('sortBy', 'registration_number')
+            ->assertSet('direction', 'desc')
+            ->assertSeeInOrder(['ZZ-9999', 'AA-0001'])
+            ->set('perPage', 10)
+            ->assertViewHas('records', fn ($records) => $records->perPage() === 10 && $records->lastPage() === 2)
+            ->set('sort', 'unsafe_column')
+            ->set('direction', 'sideways')
+            ->set('perPage', 999)
+            ->assertSet('sort', 'registration_number')
+            ->assertSet('direction', 'asc')
+            ->assertSet('perPage', 15);
+    }
+
+    public function test_pwa_shell_and_offline_page_are_exposed(): void
+    {
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+
+        $this->actingAs($admin)
+            ->get(route('vehicles.index'))
+            ->assertOk()
+            ->assertSee('/manifest.webmanifest', escape: false)
+            ->assertSee('pwa-install-banner');
+
+        $this->get(route('offline'))
+            ->assertOk()
+            ->assertSee(__('app.offline_title'));
+        $this->get(route('serviceworker'))
+            ->assertOk()
+            ->assertHeader('Content-Type', 'application/javascript; charset=UTF-8')
+            ->assertSee('autopark-shell-', escape: false)
+            ->assertSee('SKIP_WAITING', escape: false);
+
+        $manifest = json_decode(file_get_contents(public_path('manifest.webmanifest')), true, flags: JSON_THROW_ON_ERROR);
+
+        $this->assertSame('standalone', $manifest['display']);
+        $this->assertSame('/vehicles', $manifest['start_url']);
+        $this->assertSame('Автопарк', $manifest['name']);
+        $this->assertFileExists(resource_path('views/serviceworker.blade.php'));
+        $this->assertFileExists(public_path('images/icons/icon-512.png'));
+        $this->assertStringNotContainsString(
+            'localStorage',
+            file_get_contents(resource_path('js/pwa-install.js')),
+            'The install offer must not remain dismissed after a browser reload.',
+        );
+    }
 }

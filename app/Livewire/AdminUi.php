@@ -25,6 +25,15 @@ class AdminUi extends Component
     #[Url]
     public string $search = '';
 
+    #[Url]
+    public string $sort = 'registration_number';
+
+    #[Url]
+    public string $direction = 'asc';
+
+    #[Url]
+    public int $perPage = 15;
+
     public array $form = [];
 
     public function mount(string $section = 'vehicles', string $mode = 'index', ?int $recordId = null): void
@@ -70,6 +79,40 @@ class AdminUi extends Component
         $this->resetPage();
     }
 
+    public function updatingPerPage(): void
+    {
+        $this->resetPage();
+    }
+
+    public function sortBy(string $column): void
+    {
+        if (! in_array($column, $this->sortableColumns(), true)) {
+            return;
+        }
+
+        if ($this->sort === $column) {
+            $this->direction = $this->direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sort = $column;
+            $this->direction = 'asc';
+        }
+
+        $this->resetPage();
+    }
+
+    public function setSort(string $value): void
+    {
+        [$column, $direction] = array_pad(explode(':', $value, 2), 2, null);
+
+        if (! in_array($column, $this->sortableColumns(), true) || ! in_array($direction, ['asc', 'desc'], true)) {
+            return;
+        }
+
+        $this->sort = $column;
+        $this->direction = $direction;
+        $this->resetPage();
+    }
+
     public function save(): void
     {
         $vehicle = $this->recordId ? $this->vehicle() : new Vehicle;
@@ -107,9 +150,30 @@ class AdminUi extends Component
         return Vehicle::findOrFail($this->recordId);
     }
 
+    /**
+     * @return list<string>
+     */
+    private function sortableColumns(): array
+    {
+        return ['registration_number', 'make', 'model', 'year', 'inspection_until', 'octa_until'];
+    }
+
     public function render()
     {
         $this->authorize('viewAny', Vehicle::class);
+
+        $sort = in_array($this->sort, $this->sortableColumns(), true)
+            ? $this->sort
+            : 'registration_number';
+        $direction = in_array($this->direction, ['asc', 'desc'], true)
+            ? $this->direction
+            : 'asc';
+        $perPage = in_array($this->perPage, [10, 15, 25], true)
+            ? $this->perPage
+            : 15;
+        $this->sort = $sort;
+        $this->direction = $direction;
+        $this->perPage = $perPage;
 
         $records = $this->mode === 'index'
             ? Vehicle::query()
@@ -119,8 +183,9 @@ class AdminUi extends Component
                         ->orWhere('model', 'like', '%'.$this->search.'%')
                         ->orWhere('vin', 'like', '%'.$this->search.'%');
                 }))
-                ->orderBy('registration_number')
-                ->paginate(15)
+                ->orderBy($sort, $direction)
+                ->orderBy('id')
+                ->paginate($perPage)
             : collect();
 
         return view('livewire.admin-ui', [

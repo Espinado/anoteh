@@ -7,6 +7,23 @@ use App\Livewire\AdminUi;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/vehicles');
+Route::get('serviceworker.js', function () {
+    $manifestPath = public_path('build/manifest.json');
+    $workerPath = resource_path('views/serviceworker.blade.php');
+    $version = substr(hash(
+        'sha256',
+        (is_file($manifestPath) ? file_get_contents($manifestPath) : '').file_get_contents($workerPath),
+    ), 0, 12);
+
+    return response()
+        ->view('serviceworker', compact('version'))
+        ->header('Content-Type', 'application/javascript; charset=UTF-8')
+        ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        ->header('Service-Worker-Allowed', '/');
+})->name('serviceworker');
+Route::view('offline', 'offline')
+    ->middleware(SetLocale::class)
+    ->name('offline');
 
 Route::get('locale/{locale}', LocaleController::class)
     ->whereIn('locale', ['lv', 'ru'])

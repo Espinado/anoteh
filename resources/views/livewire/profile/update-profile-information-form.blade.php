@@ -67,11 +67,11 @@ new class extends Component
 
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-900">
+        <h2 class="section-title">
             {{ __('Profile Information') }}
         </h2>
 
-        <p class="mt-1 text-sm text-gray-600">
+        <p class="mt-1 text-sm text-slate-600">
             {{ __("Update your account's profile information and email address.") }}
         </p>
     </header>
@@ -113,8 +113,8 @@ new class extends Component
             <x-input-error class="mt-2" :messages="$errors->get('phone')" />
         </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+        <div class="grid gap-3 sm:flex sm:items-center">
+            <x-primary-button class="w-full sm:w-auto">{{ __('Save') }}</x-primary-button>
 
             <x-action-message class="me-3" on="profile-updated">
                 {{ __('Saved.') }}
