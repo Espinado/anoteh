@@ -4,6 +4,8 @@ use App\Models\User;
 
 return [
 
+    'passwordless_access' => env('AUTH_BYPASS_ENABLED', false),
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Defaults

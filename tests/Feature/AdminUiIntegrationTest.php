@@ -14,6 +14,18 @@ class AdminUiIntegrationTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_passwordless_mode_logs_guests_in_as_the_first_administrator(): void
+    {
+        config(['auth.passwordless_access' => true]);
+
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+
+        $this->get(route('vehicles.index'))
+            ->assertOk();
+
+        $this->assertAuthenticatedAs($admin);
+    }
+
     public function test_only_vehicle_crud_routes_remain_and_legacy_sections_redirect(): void
     {
         $user = User::factory()->create(['role' => UserRole::Admin]);
