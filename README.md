@@ -37,7 +37,7 @@ development.
 
 ## Background processes
 
-Run the queue worker for email notifications:
+Run the queue worker for outbound notifications:
 
 ```bash
 php artisan queue:work
@@ -54,6 +54,50 @@ The command can also be launched manually:
 
 ```bash
 php artisan anoteh:send-reminders
+```
+
+Send a test notification to the admin user:
+
+```bash
+php artisan anoteh:send-test-notification --sync
+```
+
+## Notifications
+
+Reminders are sent to admin and manager users when vehicle inspection or OCTA
+dates reach configured offsets (30, 14, 7, 3, 1 days before expiry and every
+overdue day).
+
+Channels:
+
+- **Email** — Laravel mailer (`MAIL_*`). Set `MAIL_MAILER` to a real transport,
+  not `log`, in production.
+- **SMS** — Bird (`BIRD_*`).
+- **WhatsApp** — Bird template send (`BIRD_WHATSAPP_*`).
+
+Each recipient must have a valid E.164 phone (`+371...`) in profile for SMS and
+WhatsApp. Enable Latvia under **Bird → SMS → Destinations** before sending SMS
+there.
+
+Example Bird configuration:
+
+```env
+BIRD_API_KEY=bk_eu1_...
+BIRD_BASE_URL=https://eu1.platform.bird.com
+BIRD_SMS_ENABLED=true
+BIRD_SMS_FROM=ANOTEH
+BIRD_WHATSAPP_ENABLED=true
+BIRD_WHATSAPP_TEMPLATE_SLUG=your_template_slug
+BIRD_WHATSAPP_TEMPLATE_LANGUAGE=ru
+```
+
+Test delivery:
+
+```bash
+php artisan anoteh:verify-bird --send
+php artisan anoteh:verify-bird --send --sms
+php artisan anoteh:verify-bird --send --whatsapp user@example.com
+php artisan anoteh:send-test-notification --sync
 ```
 
 ## Verification

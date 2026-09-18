@@ -33,6 +33,31 @@
     .link { @apply text-sm font-semibold text-blue-700 hover:text-blue-900 hover:underline; }
     .action-link { @apply inline-flex min-h-11 items-center rounded-lg px-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-50 hover:text-blue-900; }
     .empty-state { @apply rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500; }
+    .reg-acc-head { @apply flex min-h-12 w-full items-center gap-2 px-3 py-2.5 text-left transition sm:min-h-[4.25rem] sm:gap-3 sm:px-5 sm:py-3; }
+    .reg-acc-head-upcoming { @apply bg-blue-600 text-white hover:bg-blue-700; }
+    .reg-acc-head-history { @apply bg-emerald-600 text-white hover:bg-emerald-700; }
+    .reg-acc-icon { @apply hidden h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/20 text-xl sm:grid; }
+    .reg-acc-title { @apply min-w-0 flex-1 text-sm font-extrabold leading-tight sm:text-lg; }
+    .reg-acc-count { @apply shrink-0 rounded-full bg-white px-2 py-0.5 text-xs font-extrabold shadow-sm sm:px-3 sm:py-1 sm:text-sm; }
+    .reg-acc-head-upcoming .reg-acc-count { @apply text-blue-700; }
+    .reg-acc-head-history .reg-acc-count { @apply text-emerald-700; }
+    .reg-acc-toggle { @apply grid h-10 w-10 shrink-0 place-items-center rounded-xl border-2 border-white bg-white text-2xl font-bold leading-none text-blue-700 shadow-lg transition duration-200 sm:h-12 sm:w-12 sm:text-3xl; }
+    .reg-acc-head-history .reg-acc-toggle { @apply text-emerald-700; }
+    .reg-acc-toggle.is-open { @apply rotate-180; }
+    .reg-toolbar { @apply flex flex-nowrap items-center gap-2 overflow-x-auto rounded-xl border-2 bg-white p-2 shadow-sm; }
+    .reg-toolbar-upcoming { @apply border-blue-300; }
+    .reg-toolbar-history { @apply border-emerald-300; }
+    .reg-add-form { @apply mt-3 grid grid-cols-[minmax(0,3fr)_minmax(0,2fr)_auto] items-center gap-2; }
+    .reg-add-form select,
+    .reg-add-form input { @apply !min-h-10 !w-full rounded-lg border-blue-300 bg-white px-2.5 text-sm font-medium text-slate-900 shadow-sm focus:border-blue-600 focus:ring-blue-600; }
+    .reg-add-form input { @apply tabular-nums; }
+    .reg-add-btn { @apply btn-primary shrink-0 !min-h-10 !px-3 !text-sm shadow-md; }
+    .reg-add-errors { @apply col-span-3 mt-1 space-y-0.5 text-xs font-medium text-red-600; }
+    .vehicle-form-actions { @apply sticky bottom-0 z-10 -mx-4 mt-6 grid grid-cols-2 gap-3 border-t border-slate-200 bg-white/95 p-4 backdrop-blur sm:static sm:mx-0 sm:flex sm:justify-end sm:border-0 sm:bg-transparent sm:p-0; }
+    .vehicle-show-head { @apply flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-center sm:justify-between sm:pb-5; }
+    .vehicle-show-head .btn-secondary { @apply w-full justify-center sm:w-auto; }
+    .reg-panel { @apply mt-4 space-y-4 sm:mt-6 sm:space-y-5; }
+    .reg-add-section { @apply p-3 sm:p-5; }
     .install-banner { @apply fixed inset-x-3 bottom-3 z-[80] mx-auto max-w-xl rounded-2xl border border-blue-200 bg-white p-4 shadow-2xl sm:inset-x-auto sm:right-5 sm:bottom-5 sm:w-[26rem]; }
     .update-banner { @apply fixed inset-x-3 top-3 z-[90] mx-auto max-w-xl rounded-2xl border border-amber-300 bg-amber-50 p-4 shadow-2xl; }
 }

@@ -4,6 +4,7 @@ use App\Http\Controllers\AttachmentDownloadController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Middleware\SetLocale;
 use App\Livewire\AdminUi;
+use App\Livewire\UsersUi;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/vehicles');
@@ -37,7 +38,12 @@ Route::middleware(['auth', 'verified', SetLocale::class])->group(function () {
     Route::get('vehicles/{recordId}', AdminUi::class)->whereNumber('recordId')->defaults('section', 'vehicles')->defaults('mode', 'show')->name('vehicles.show');
     Route::get('vehicles/{recordId}/edit', AdminUi::class)->whereNumber('recordId')->defaults('section', 'vehicles')->defaults('mode', 'edit')->name('vehicles.edit');
 
-    foreach (['templates', 'plans', 'service-records', 'defects', 'expenses', 'documents', 'reports', 'notifications', 'users', 'audit'] as $legacySection) {
+    Route::get('users', UsersUi::class)->defaults('mode', 'index')->name('users.index');
+    Route::get('users/create', UsersUi::class)->defaults('mode', 'create')->name('users.create');
+    Route::get('users/{recordId}', UsersUi::class)->whereNumber('recordId')->defaults('mode', 'show')->name('users.show');
+    Route::get('users/{recordId}/edit', UsersUi::class)->whereNumber('recordId')->defaults('mode', 'edit')->name('users.edit');
+
+    foreach (['templates', 'plans', 'service-records', 'defects', 'expenses', 'documents', 'reports', 'notifications', 'audit'] as $legacySection) {
         Route::get($legacySection.'/{path?}', fn () => redirect()->route('vehicles.index'))
             ->where('path', '.*');
     }

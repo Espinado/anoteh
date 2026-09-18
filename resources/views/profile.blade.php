@@ -18,11 +18,5 @@
                 <livewire:profile.update-password-form />
             </div>
         </section>
-
-        <section class="card">
-            <div class="max-w-2xl">
-                <livewire:profile.delete-user-form />
-            </div>
-        </section>
     </div>
 </x-app-layout>

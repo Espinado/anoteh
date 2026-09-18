@@ -188,9 +188,13 @@ class AdminUi extends Component
                 ->paginate($perPage)
             : collect();
 
+        $record = in_array($this->mode, ['edit', 'show'], true) && $this->recordId
+            ? $this->vehicle()
+            : null;
+
         return view('livewire.admin-ui', [
             'records' => $records,
-            'record' => $this->recordId ? $this->vehicle() : null,
+            'record' => $record,
         ]);
     }
 }

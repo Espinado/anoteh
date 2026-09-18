@@ -135,8 +135,8 @@
             </div>
         @endif
     @elseif (in_array($mode, ['create', 'edit'], true))
-        <form wire:submit="save" class="card max-w-4xl">
-            <div class="grid gap-5 md:grid-cols-2">
+        <form wire:submit="save" class="card w-full max-w-4xl">
+            <div class="grid gap-4 sm:gap-5 md:grid-cols-2">
                 @foreach (['registration_number', 'make', 'model', 'year', 'vin', 'fuel_type', 'inspection_until', 'octa_until'] as $field)
                     <label class="field">
                         <span>{{ __('app.fields.'.$field) }}</span>
@@ -156,21 +156,27 @@
                     </label>
                 @endforeach
             </div>
-            <div class="mt-8 grid gap-3 sm:flex sm:justify-end">
+            <div class="vehicle-form-actions">
                 <a href="{{ route('vehicles.index') }}" wire:navigate class="btn-secondary min-h-11 justify-center">{{ __('app.cancel') }}</a>
                 <button class="btn-primary min-h-11 justify-center">{{ __('app.save') }}</button>
             </div>
         </form>
-    @else
-        <section class="card max-w-4xl">
-            <div class="flex items-center justify-between border-b pb-5">
-                <div>
-                    <h2 class="text-2xl font-bold">{{ $record->registration_number }}</h2>
-                    <p class="text-slate-500">{{ $record->make }} {{ $record->model }}</p>
-                </div>
-                @can('update', $record)<a href="{{ route('vehicles.edit', $record) }}" wire:navigate class="btn-secondary">{{ __('app.edit') }}</a>@endcan
+
+        @if ($recordId)
+            <div class="w-full max-w-4xl">
+                <livewire:vehicle-regulations-panel :vehicle="$record" :can-manage="true" :key="'vehicle-regulations-edit-'.$recordId" />
             </div>
-            <dl class="mt-6 grid gap-4 sm:grid-cols-2">
+        @endif
+    @else
+        <section class="card w-full max-w-4xl">
+            <div class="vehicle-show-head">
+                <div class="min-w-0">
+                    <h2 class="truncate text-xl font-bold sm:text-2xl">{{ $record->registration_number }}</h2>
+                    <p class="truncate text-sm text-slate-500 sm:text-base">{{ $record->make }} {{ $record->model }}</p>
+                </div>
+                @can('update', $record)<a href="{{ route('vehicles.edit', $record) }}" wire:navigate class="btn-secondary min-h-11">{{ __('app.edit') }}</a>@endcan
+            </div>
+            <dl class="mt-4 grid gap-3 sm:mt-6 sm:grid-cols-2 sm:gap-4">
                 @foreach (['registration_number', 'make', 'model', 'year', 'vin', 'fuel_type', 'inspection_until', 'octa_until'] as $field)
                     @php($value = $record->{$field})
                     <div class="rounded-xl bg-slate-50 p-4">
@@ -180,5 +186,9 @@
                 @endforeach
             </dl>
         </section>
+
+        <div class="w-full max-w-4xl">
+            <livewire:vehicle-regulations-panel :vehicle="$record" :can-manage="auth()->user()->can('update', $record)" :key="'vehicle-regulations-show-'.$record->id" />
+        </div>
     @endif
 </div>

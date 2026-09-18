@@ -2,8 +2,8 @@
 
 namespace App\Notifications;
 
-use App\Notifications\Channels\TwilioSmsChannel;
-use App\Notifications\Channels\TwilioWhatsAppChannel;
+use App\Notifications\Channels\BirdSmsChannel;
+use App\Notifications\Channels\BirdWhatsAppChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -20,14 +20,18 @@ final class AnotehReminder extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        $channels = ['database', 'mail'];
+        $channels = ['database'];
 
-        if ($this->twilioAvailable($notifiable, 'sms')) {
-            $channels[] = TwilioSmsChannel::class;
+        if ($this->mailEnabled()) {
+            $channels[] = 'mail';
         }
 
-        if ($this->twilioAvailable($notifiable, 'whatsapp')) {
-            $channels[] = TwilioWhatsAppChannel::class;
+        if ($this->birdSmsAvailable($notifiable)) {
+            $channels[] = BirdSmsChannel::class;
+        }
+
+        if ($this->birdWhatsAppAvailable($notifiable)) {
+            $channels[] = BirdWhatsAppChannel::class;
         }
 
         return $channels;
@@ -47,22 +51,55 @@ final class AnotehReminder extends Notification implements ShouldQueue
         return ['kind' => $this->kind, 'title' => $this->title, 'message' => $this->message, 'subject_type' => $this->subjectType, 'subject_id' => $this->subjectId];
     }
 
-    public function toTwilioSms(object $notifiable): string
+    public function toBirdSms(object $notifiable): string
     {
         return $this->message;
     }
 
-    public function toTwilioWhatsApp(object $notifiable): string
+    /**
+     * @return array{slug?: string, language?: string|null, components: list<array<string, mixed>>}
+     */
+    public function toBirdWhatsApp(object $notifiable): array
     {
-        return $this->message;
+        return [
+            'language' => config('services.bird.whatsapp_template_language'),
+            'components' => [
+                [
+                    'type' => 'body',
+                    'parameters' => [
+                        ['type' => 'text', 'text' => $this->message],
+                    ],
+                ],
+            ],
+        ];
     }
 
-    private function twilioAvailable(object $notifiable, string $channel): bool
+    private function mailEnabled(): bool
     {
-        return preg_match('/^\+[1-9]\d{7,14}$/', (string) ($notifiable->phone ?? '')) === 1
-            && (bool) config("services.twilio.{$channel}_enabled")
-            && filled(config('services.twilio.sid'))
-            && filled(config('services.twilio.token'))
-            && filled(config("services.twilio.{$channel}_from"));
+        return (bool) config('services.notifications.mail_enabled', true)
+            && config('mail.default') !== 'log';
+    }
+
+    private function birdSmsAvailable(object $notifiable): bool
+    {
+        return $this->hasE164Phone($notifiable)
+            && (bool) config('services.bird.sms_enabled')
+            && filled(config('services.bird.api_key'))
+            && filled(config('services.bird.base_url'))
+            && filled(config('services.bird.sms_from'));
+    }
+
+    private function birdWhatsAppAvailable(object $notifiable): bool
+    {
+        return $this->hasE164Phone($notifiable)
+            && (bool) config('services.bird.whatsapp_enabled')
+            && filled(config('services.bird.api_key'))
+            && filled(config('services.bird.base_url'))
+            && filled(config('services.bird.whatsapp_template_slug'));
+    }
+
+    private function hasE164Phone(object $notifiable): bool
+    {
+        return preg_match('/^\+[1-9]\d{7,14}$/', (string) ($notifiable->phone ?? '')) === 1;
     }
 }

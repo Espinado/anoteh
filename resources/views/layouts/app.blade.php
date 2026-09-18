@@ -27,6 +27,11 @@
                     <a href="{{ route('vehicles.index') }}" wire:navigate @click="sidebarOpen = false" class="sidebar-link {{ request()->routeIs('vehicles.*') ? 'active' : '' }}">
                         <span class="w-6 text-center text-base text-slate-400">▣</span><span>{{ __('app.vehicles') }}</span>
                     </a>
+                    @can('viewAny', App\Models\User::class)
+                        <a href="{{ route('users.index') }}" wire:navigate @click="sidebarOpen = false" class="sidebar-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                            <span class="w-6 text-center text-base text-slate-400">👤</span><span>{{ __('app.users') }}</span>
+                        </a>
+                    @endcan
                 </nav>
                 <div class="border-t border-white/10 p-4">
                     <p class="truncate text-sm font-semibold">{{ auth()->user()->name }}</p>

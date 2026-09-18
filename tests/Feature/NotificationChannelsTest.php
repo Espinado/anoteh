@@ -2,13 +2,13 @@
 
 namespace Tests\Feature;
 
-use App\Contracts\TwilioMessageSender;
+use App\Contracts\BirdClientInterface;
 use App\Enums\UserRole;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Notifications\AnotehReminder;
-use App\Notifications\Channels\TwilioSmsChannel;
-use App\Notifications\Channels\TwilioWhatsAppChannel;
+use App\Notifications\Channels\BirdSmsChannel;
+use App\Notifications\Channels\BirdWhatsAppChannel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Mockery;
@@ -18,40 +18,68 @@ class NotificationChannelsTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_twilio_channels_are_skipped_without_configuration(): void
+    public function test_bird_channels_are_skipped_without_configuration(): void
     {
         config([
-            'services.twilio.sms_enabled' => true,
-            'services.twilio.sid' => null,
-            'services.twilio.token' => null,
-            'services.twilio.sms_from' => '+15005550006',
+            'services.bird.sms_enabled' => true,
+            'services.bird.api_key' => null,
+            'services.bird.base_url' => null,
+            'services.bird.sms_from' => 'ANOTEH',
         ]);
-        $sender = Mockery::mock(TwilioMessageSender::class);
-        $sender->shouldNotReceive('send');
 
-        (new TwilioSmsChannel($sender))->send(
+        $bird = Mockery::mock(BirdClientInterface::class);
+        $bird->shouldNotReceive('sendSms');
+        $bird->shouldNotReceive('sendWhatsAppTemplate');
+
+        (new BirdSmsChannel($bird))->send(
             User::factory()->make(['phone' => '+37120000000']),
             $this->notification(),
         );
     }
 
-    public function test_twilio_channels_send_expected_sms_and_whatsapp_payloads(): void
+    public function test_bird_channels_send_expected_sms_and_whatsapp_payloads(): void
     {
         config([
-            'services.twilio.sid' => 'ACtest',
-            'services.twilio.token' => 'secret',
-            'services.twilio.sms_enabled' => true,
-            'services.twilio.sms_from' => '+15005550006',
-            'services.twilio.whatsapp_enabled' => true,
-            'services.twilio.whatsapp_from' => '+14155238886',
+            'services.bird.api_key' => 'bk_eu1_test',
+            'services.bird.base_url' => 'https://eu1.platform.bird.com',
+            'services.bird.sms_enabled' => true,
+            'services.bird.sms_from' => 'ANOTEH',
+            'services.bird.whatsapp_enabled' => true,
+            'services.bird.whatsapp_template_slug' => 'bird_test',
+            'services.bird.whatsapp_template_language' => 'ru',
         ]);
         $user = User::factory()->make(['phone' => '+37120000000']);
-        $sender = Mockery::mock(TwilioMessageSender::class);
-        $sender->shouldReceive('send')->once()->with('+37120000000', '+15005550006', 'Reminder body');
-        $sender->shouldReceive('send')->once()->with('whatsapp:+37120000000', 'whatsapp:+14155238886', 'Reminder body');
+        $bird = Mockery::mock(BirdClientInterface::class);
+        $bird->shouldReceive('sendSms')->once()->with('+37120000000', 'Reminder body');
+        $bird->shouldReceive('sendWhatsAppTemplate')->once()->with(
+            '+37120000000',
+            'bird_test',
+            'ru',
+            Mockery::type('array'),
+        );
 
-        (new TwilioSmsChannel($sender))->send($user, $this->notification());
-        (new TwilioWhatsAppChannel($sender))->send($user, $this->notification());
+        (new BirdSmsChannel($bird))->send($user, $this->notification());
+        (new BirdWhatsAppChannel($bird))->send($user, $this->notification());
+    }
+
+    public function test_anoteh_reminder_uses_bird_channels_when_configured(): void
+    {
+        config([
+            'mail.default' => 'array',
+            'services.notifications.mail_enabled' => true,
+            'services.bird.api_key' => 'bk_eu1_test',
+            'services.bird.base_url' => 'https://eu1.platform.bird.com',
+            'services.bird.sms_enabled' => true,
+            'services.bird.sms_from' => 'ANOTEH',
+            'services.bird.whatsapp_enabled' => true,
+            'services.bird.whatsapp_template_slug' => 'bird_test',
+        ]);
+
+        $user = User::factory()->make(['phone' => '+37120000000']);
+        $channels = $this->notification()->via($user);
+
+        $this->assertContains(BirdSmsChannel::class, $channels);
+        $this->assertContains(BirdWhatsAppChannel::class, $channels);
     }
 
     public function test_reminders_run_only_on_offsets_and_every_overdue_day(): void

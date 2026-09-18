@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\DefectSeverity;
 use App\Enums\DefectStatus;
 use App\Enums\FuelType;
+use App\Enums\NextRegulationType;
 use App\Enums\VehicleCategory;
 use App\Enums\VehicleStatus;
 use App\Models\Concerns\HasAttachments;
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[Fillable([
     'registration_number', 'vin', 'make', 'model', 'year', 'status',
     'category', 'body_type', 'fuel_type', 'commissioned_on',
-    'inspection_until', 'octa_until', 'responsible_user_id',
+    'inspection_until', 'octa_until', 'next_regulation', 'next_regulation_odometer', 'responsible_user_id',
     'primary_attachment_id', 'current_odometer', 'notes',
 ])]
 class Vehicle extends Model
@@ -38,6 +39,8 @@ class Vehicle extends Model
             'commissioned_on' => 'immutable_date',
             'inspection_until' => 'immutable_date',
             'octa_until' => 'immutable_date',
+            'next_regulation' => NextRegulationType::class,
+            'next_regulation_odometer' => 'decimal:1',
             'current_odometer' => 'decimal:1',
         ];
     }
@@ -80,6 +83,11 @@ class Vehicle extends Model
     public function documents(): HasMany
     {
         return $this->hasMany(VehicleDocument::class);
+    }
+
+    public function regulations(): HasMany
+    {
+        return $this->hasMany(VehicleRegulation::class);
     }
 
     public function isRoadworthy(): bool

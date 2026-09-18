@@ -16,13 +16,19 @@
     <body class="h-full bg-slate-100 font-sans text-slate-900 antialiased">
         <main class="safe-bottom flex min-h-full items-center justify-center p-3 sm:p-6">
             <div class="w-full max-w-md">
-                <a href="/" wire:navigate class="mx-auto mb-5 flex w-fit items-center gap-3 rounded-2xl px-3 py-2">
-                    <span class="grid h-12 w-12 place-items-center rounded-2xl bg-blue-700 text-2xl font-bold text-white shadow-lg shadow-blue-200">A</span>
-                    <span>
-                        <strong class="block text-xl">Anoteh</strong>
-                        <small class="text-slate-500">{{ __('app.fleet_management') }}</small>
-                    </span>
-                </a>
+                <div class="mb-5 flex items-start justify-between gap-3">
+                    <a href="/" wire:navigate class="flex min-w-0 items-center gap-3 rounded-2xl px-3 py-2">
+                        <span class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-700 text-2xl font-bold text-white shadow-lg shadow-blue-200">A</span>
+                        <span class="min-w-0">
+                            <strong class="block text-xl">Anoteh</strong>
+                            <small class="text-slate-500">{{ __('app.fleet_management') }}</small>
+                        </span>
+                    </a>
+                    <div class="flex shrink-0 gap-1 rounded-xl border border-slate-200 bg-white p-1">
+                        <a href="{{ route('locale.switch', 'ru') }}" class="rounded-lg px-3 py-2 text-xs font-bold uppercase {{ app()->getLocale() === 'ru' ? 'bg-blue-700 text-white' : 'text-slate-600 hover:bg-slate-50' }}">RU</a>
+                        <a href="{{ route('locale.switch', 'lv') }}" class="rounded-lg px-3 py-2 text-xs font-bold uppercase {{ app()->getLocale() === 'lv' ? 'bg-blue-700 text-white' : 'text-slate-600 hover:bg-slate-50' }}">LV</a>
+                    </div>
+                </div>
                 <section class="card !p-5 sm:!p-7">
                     {{ $slot }}
                 </section>

@@ -26,24 +26,24 @@ class AdminUiIntegrationTest extends TestCase
         $this->assertAuthenticatedAs($admin);
     }
 
-    public function test_only_vehicle_crud_routes_remain_and_legacy_sections_redirect(): void
+    public function test_vehicle_and_user_routes_exist_and_legacy_sections_redirect(): void
     {
         $user = User::factory()->create(['role' => UserRole::Admin]);
 
-        foreach (['vehicles.index', 'vehicles.create'] as $route) {
+        foreach (['vehicles.index', 'vehicles.create', 'users.index', 'users.create'] as $route) {
             $this->actingAs($user)->get(route($route))->assertOk();
         }
 
-        foreach (['/', '/dashboard', '/templates', '/plans', '/service-records', '/defects', '/expenses', '/documents', '/reports', '/notifications', '/users', '/audit'] as $uri) {
+        foreach (['/', '/dashboard', '/templates', '/plans', '/service-records', '/defects', '/expenses', '/documents', '/reports', '/notifications', '/audit'] as $uri) {
             $this->actingAs($user)->get($uri)->assertRedirect('/vehicles');
         }
 
-        foreach (['templates.index', 'plans.index', 'service-records.index', 'defects.index', 'expenses.index', 'documents.index', 'reports.index', 'notifications.index', 'users.index', 'audit.index'] as $name) {
+        foreach (['templates.index', 'plans.index', 'service-records.index', 'defects.index', 'expenses.index', 'documents.index', 'reports.index', 'notifications.index', 'audit.index'] as $name) {
             $this->assertFalse(app('router')->has($name));
         }
     }
 
-    public function test_sidebar_contains_only_vehicles_and_profile_is_in_header(): void
+    public function test_admin_sidebar_contains_vehicles_and_users(): void
     {
         $user = User::factory()->create(['role' => UserRole::Admin]);
 
@@ -51,6 +51,7 @@ class AdminUiIntegrationTest extends TestCase
 
         $response->assertOk()
             ->assertSee(route('vehicles.index'))
+            ->assertSee(route('users.index'))
             ->assertSee(route('profile'))
             ->assertDontSee(__('app.maintenance_plans'))
             ->assertDontSee(__('app.notifications'));

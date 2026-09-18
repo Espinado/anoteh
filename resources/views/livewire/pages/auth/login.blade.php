@@ -25,20 +25,19 @@ new #[Layout('layouts.guest')] class extends Component
 }; ?>
 
 <div>
-    <!-- Session Status -->
+    <h1 class="mb-5 text-xl font-bold tracking-tight text-slate-900">{{ __('auth.title') }}</h1>
+
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
     <form wire:submit="login">
-        <!-- Email Address -->
         <div>
-            <x-input-label for="email" :value="__('Email')" />
+            <x-input-label for="email" :value="__('app.fields.email')" />
             <x-text-input wire:model="form.email" id="email" class="block mt-1 w-full" type="email" name="email" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('form.email')" class="mt-2" />
         </div>
 
-        <!-- Password -->
         <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+            <x-input-label for="password" :value="__('app.fields.password')" />
 
             <x-text-input wire:model="form.password" id="password" class="block mt-1 w-full"
                             type="password"
@@ -48,23 +47,16 @@ new #[Layout('layouts.guest')] class extends Component
             <x-input-error :messages="$errors->get('form.password')" class="mt-2" />
         </div>
 
-        <!-- Remember Me -->
         <div class="block mt-4">
             <label for="remember" class="inline-flex items-center">
                 <input wire:model="form.remember" id="remember" type="checkbox" class="rounded border-slate-300 text-blue-700 shadow-sm focus:ring-blue-600" name="remember">
-                <span class="ms-2 text-sm text-slate-600">{{ __('Remember me') }}</span>
+                <span class="ms-2 text-sm text-slate-600">{{ __('auth.remember_me') }}</span>
             </label>
         </div>
 
-        <div class="mt-5 grid gap-3 sm:flex sm:items-center sm:justify-end">
-            @if (Route::has('password.request'))
-                <a class="min-h-11 rounded-xl px-3 py-3 text-center text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 sm:py-2.5" href="{{ route('password.request') }}" wire:navigate>
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="w-full sm:ms-3 sm:w-auto">
-                {{ __('Log in') }}
+        <div class="mt-5">
+            <x-primary-button class="w-full">
+                {{ __('auth.login') }}
             </x-primary-button>
         </div>
     </form>
