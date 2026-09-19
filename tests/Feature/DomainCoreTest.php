@@ -110,7 +110,7 @@ class DomainCoreTest extends TestCase
     public function test_daily_reminders_are_idempotent(): void
     {
         Notification::fake();
-        User::factory()->create(['role' => UserRole::Manager]);
+        User::factory()->create(['role' => UserRole::Manager, 'email' => 'av@serviscentrs.lv']);
         Vehicle::factory()->create([
             'inspection_until' => '2026-09-19',
             'octa_until' => '2026-08-19',
@@ -119,8 +119,8 @@ class DomainCoreTest extends TestCase
         $this->artisan('anoteh:send-reminders', ['--date' => '2026-08-20'])->assertSuccessful();
         $this->artisan('anoteh:send-reminders', ['--date' => '2026-08-20'])->assertSuccessful();
 
-        $this->assertDatabaseCount('reminder_deliveries', 2);
-        Notification::assertCount(2);
+        $this->assertDatabaseCount('reminder_deliveries', 1);
+        Notification::assertCount(1);
     }
 
     public function test_plan_creation_uses_vehicle_and_template_baselines(): void

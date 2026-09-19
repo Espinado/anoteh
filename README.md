@@ -64,9 +64,12 @@ php artisan anoteh:send-test-notification --sync
 
 ## Notifications
 
-Reminders are sent to admin and manager users when vehicle inspection or OCTA
-dates reach configured offsets (30, 14, 7, 3, 1 days before expiry and every
-overdue day).
+Reminders are emailed when vehicle inspection or OCTA dates reach configured
+offsets: 30 and 20 days before expiry, then every day from 10 days before
+expiry through the expiry date itself.
+
+Recipients are configured with `EXPIRY_REMINDER_EMAILS` (comma-separated). Each
+address must belong to an existing user account (default: `av@serviscentrs.lv`).
 
 Channels:
 

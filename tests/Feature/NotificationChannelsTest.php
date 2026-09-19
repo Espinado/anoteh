@@ -82,12 +82,21 @@ class NotificationChannelsTest extends TestCase
         $this->assertContains(BirdWhatsAppChannel::class, $channels);
     }
 
-    public function test_reminders_run_only_on_offsets_and_every_overdue_day(): void
+    public function test_expiry_reminders_use_new_schedule_and_skip_bird_channels(): void
     {
         Notification::fake();
-        User::factory()->create(['role' => UserRole::Manager]);
+        User::factory()->create(['role' => UserRole::Manager, 'email' => 'av@serviscentrs.lv']);
 
-        foreach ([30, 14, 7, 3, 1, -1, 0, 2] as $days) {
+        config([
+            'mail.default' => 'array',
+            'services.notifications.mail_enabled' => true,
+            'services.bird.api_key' => 'bk_eu1_test',
+            'services.bird.base_url' => 'https://eu1.platform.bird.com',
+            'services.bird.sms_enabled' => true,
+            'services.bird.sms_from' => 'ANOTEH',
+        ]);
+
+        foreach ([30, 20, 10, 9, 7, 3, 1, 0, 2, 14, -1] as $days) {
             Vehicle::factory()->create([
                 'inspection_until' => now('UTC')->parse('2026-08-20')->addDays($days)->toDateString(),
                 'octa_until' => null,
@@ -95,16 +104,25 @@ class NotificationChannelsTest extends TestCase
         }
 
         $this->artisan('anoteh:send-reminders', ['--date' => '2026-08-20'])->assertSuccessful();
-        $this->assertDatabaseCount('reminder_deliveries', 6);
-        Notification::assertCount(6);
+        $this->assertDatabaseCount('reminder_deliveries', 8);
+        Notification::assertCount(8);
+
+        $manager = User::first();
+        Notification::assertSentTo(
+            $manager,
+            AnotehReminder::class,
+            fn (AnotehReminder $notification) => $notification->vehicleSummary !== null
+                && in_array('mail', $notification->via($manager), true)
+                && ! in_array(BirdSmsChannel::class, $notification->via($manager), true),
+        );
 
         $this->artisan('anoteh:send-reminders', ['--date' => '2026-08-21'])->assertSuccessful();
-        $this->assertDatabaseCount('reminder_deliveries', 9);
-        Notification::assertCount(9);
+        $this->assertDatabaseCount('reminder_deliveries', 12);
+        Notification::assertCount(12);
     }
 
     private function notification(): AnotehReminder
     {
-        return new AnotehReminder('inspection_until', 'Reminder', 'Reminder body', 'vehicle', 1);
+        return new AnotehReminder('test', 'Reminder', 'Reminder body', 'vehicle', 1);
     }
 }
