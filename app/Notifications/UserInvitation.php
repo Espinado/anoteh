@@ -7,7 +7,6 @@ use Illuminate\Notifications\Notification;
 
 class UserInvitation extends Notification
 {
-
     public function __construct(public string $token) {}
 
     /**

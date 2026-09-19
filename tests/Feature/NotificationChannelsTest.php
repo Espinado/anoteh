@@ -96,7 +96,7 @@ class NotificationChannelsTest extends TestCase
             'services.bird.sms_from' => 'ANOTEH',
         ]);
 
-        foreach ([30, 20, 10, 9, 7, 3, 1, 0, 2, 14, -1] as $days) {
+        foreach ([30, 20, 10, 9, 7, 3, 1, 0, 15, 14, -1] as $days) {
             Vehicle::factory()->create([
                 'inspection_until' => now('UTC')->parse('2026-08-20')->addDays($days)->toDateString(),
                 'octa_until' => null,
@@ -117,8 +117,8 @@ class NotificationChannelsTest extends TestCase
         );
 
         $this->artisan('anoteh:send-reminders', ['--date' => '2026-08-21'])->assertSuccessful();
-        $this->assertDatabaseCount('reminder_deliveries', 12);
-        Notification::assertCount(12);
+        $this->assertDatabaseCount('reminder_deliveries', 13);
+        Notification::assertCount(13);
     }
 
     private function notification(): AnotehReminder

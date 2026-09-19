@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Contracts\BirdClientInterface;
-use App\Services\BirdHttpClient;
 use App\Models\Attachment;
 use App\Models\AuditLog;
 use App\Models\Defect;
@@ -28,6 +27,7 @@ use App\Policies\UserPolicy;
 use App\Policies\VehicleDocumentPolicy;
 use App\Policies\VehicleMaintenancePlanPolicy;
 use App\Policies\VehiclePolicy;
+use App\Services\BirdHttpClient;
 use App\Services\Odometer\ManualOdometerProvider;
 use App\Services\Odometer\OdometerProviderInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -35,6 +35,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**

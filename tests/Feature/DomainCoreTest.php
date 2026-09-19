@@ -186,9 +186,9 @@ class DomainCoreTest extends TestCase
     public function test_only_configured_vehicle_expiry_offsets_are_reminded(): void
     {
         Notification::fake();
-        $manager = User::factory()->create(['role' => UserRole::Manager]);
+        $manager = User::factory()->create(['role' => UserRole::Manager, 'email' => 'av@serviscentrs.lv']);
         $vehicle = Vehicle::factory()->create([
-            'inspection_until' => '2026-08-22',
+            'inspection_until' => '2026-09-30',
             'octa_until' => null,
         ]);
         Defect::factory()->create([
